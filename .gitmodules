@@ -1,0 +1,16 @@
+[submodule "luci-theme-argon"]
+	path = luci-theme-argon
+	url = https://github.com/hawsoft/luci-theme-argon.git
+	branch = master
+[submodule "luci-app-isotre"]
+        path = luci-app-istore
+        url = https://github.com/hawsoft/luci-istore.git
+        branch = main
+[submodule "trojan-go"]
+        path = trojan-go
+        url = https://github.com/hawsoft/trojan-go.git
+        branch = master
+[submodule "luci-app-trojan"]
+        path = luci-app-trojan
+        url = https://github.com/hawsoft/luci-app-trojan.git
+        branch = master

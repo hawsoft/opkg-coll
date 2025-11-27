@@ -14,3 +14,7 @@
         path = luci-app-istore
         url = https://github.com/hawsoft/luci-istore.git
         branch = master
+[submodule "pdnsd-alt"]
+	path = pdnsd-alt
+	url = https://github.com/hawsoft/pdnsd-alt.git
+	branch = master

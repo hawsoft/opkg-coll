@@ -10,3 +10,15 @@
 	path = luci-app-iguge
 	url = https://github.com/hawsoft/luci-app-iguge.git
 	branch = main
+[submodule "luci-app-trojan"]
+	path = luci-app-trojan
+	url = https://github.com/hawsoft/luci-app-trojan.git
+	branch = main
+[submodule "trojan-go"]
+	path = trojan-go
+	url = https://github.com/hawsoft/trojan-go.git
+	branch = main
+[submodule "pdnsd-alt"]
+	path = pdnsd-alt
+	url = https://github.com/hawsoft/pdnsd-alt.git
+	branch = main

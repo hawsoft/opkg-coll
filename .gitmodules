@@ -13,3 +13,6 @@
 [submodule "trojan-go"]
 	path = trojan-go
 	url = https://github.com/p4gefau1t/trojan-go.git
+[submodule "pdnsd-alt"]
+	path = pdnsd-alt
+	url = https://github.com/op4packages/pdnsd-alt.git

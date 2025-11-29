@@ -18,5 +18,5 @@
 	url = https://github.com/op4packages/pdnsd-alt.git
 [submodule "golang-1.25"]
 	path = golang-1.25
-	url = https://github.com/kenzok8/golang
+	url = https://github.com/kenzok8/golang.git
 	branch = 1.25

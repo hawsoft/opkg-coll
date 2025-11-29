@@ -1,0 +1,15 @@
+[submodule "luci-app-hello-world"]
+	path = luci-app-hello-world
+	url = https://github.com/fw876/helloworld.git
+[submodule "luci-app-istore"]
+	path = luci-app-istore
+	url = https://github.com/linkease/istore.git
+[submodule "luci-theme-argon"]
+	path = luci-theme-argon
+	url = https://github.com/jerrykuku/luci-theme-argon.git
+[submodule "luci-app-trojan-go"]
+	path = luci-app-trojan-go
+	url = https://github.com/frainzy1477/luci-app-trojan.git
+[submodule "trojan-go"]
+	path = trojan-go
+	url = https://github.com/p4gefau1t/trojan-go.git

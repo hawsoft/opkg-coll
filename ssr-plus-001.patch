@@ -1,0 +1,165 @@
+diff --git a/luci-app-ssr-plus/po/zh_Hans/ssr-plus.po b/luci-app-ssr-plus/po/zh_Hans/ssr-plus.po
+index a48a1d5..94387bc 100644
+--- a/luci-app-ssr-plus/po/zh_Hans/ssr-plus.po
++++ b/luci-app-ssr-plus/po/zh_Hans/ssr-plus.po
+@@ -1255,7 +1255,7 @@ msgstr ""
+ 
+ #: applications/luci-app-ssr-plus/luasrc/model/cbi/shadowsocksr/control.lua:132
+ msgid "Netflix Domain List"
+-msgstr "Netflix 分流域名列表"
++msgstr "分流域名列表"
+ 
+ #: applications/luci-app-ssr-plus/luasrc/model/cbi/shadowsocksr/status.lua:196
+ msgid "Netflix IP Data"
+@@ -1590,7 +1590,7 @@ msgstr "重启服务"
+ 
+ #: applications/luci-app-ssr-plus/luasrc/model/cbi/shadowsocksr/status.lua:162
+ msgid "Restart ShadowSocksR Plus+"
+-msgstr "重启 ShadowSocksR Plus+"
++msgstr "重启云梯"
+ 
+ #: applications/luci-app-ssr-plus/luasrc/view/shadowsocksr/backup_restore.htm:9
+ #: applications/luci-app-ssr-plus/luasrc/view/shadowsocksr/backup_restore.htm:24
+@@ -1689,7 +1689,7 @@ msgstr "服务器节点故障自动切换/广告屏蔽/中国大陆 IP 段数据
+ 
+ #: applications/luci-app-ssr-plus/luasrc/controller/shadowsocksr.lua:14
+ msgid "Servers Nodes"
+-msgstr "服务器节点"
++msgstr "订阅节点"
+ 
+ #: applications/luci-app-ssr-plus/luasrc/model/cbi/shadowsocksr/servers.lua:67
+ msgid "Servers subscription and manage"
+@@ -1736,11 +1736,11 @@ msgstr "ShadowSocks-rust 版本"
+ 
+ #: applications/luci-app-ssr-plus/luasrc/controller/shadowsocksr.lua:10
+ msgid "ShadowSocksR Plus+"
+-msgstr ""
++msgstr "普拉斯云梯"
+ 
+ #: applications/luci-app-ssr-plus/luasrc/model/cbi/shadowsocksr/client.lua:38
+ msgid "ShadowSocksR Plus+ Settings"
+-msgstr "ShadowSocksR Plus+ 设置"
++msgstr "云梯设置"
+ 
+ #: applications/luci-app-ssr-plus/luasrc/model/cbi/shadowsocksr/client-config.lua:654
+ msgid "Shadowsocks password"
+@@ -1810,7 +1810,7 @@ msgstr "订阅节点关键字保留检查"
+ 
+ #: applications/luci-app-ssr-plus/luasrc/model/cbi/shadowsocksr/servers.lua:130
+ msgid "Subscribe URL"
+-msgstr "SS/SSR/V2/TROJAN/HY2/TUIC 订阅 URL"
++msgstr "订阅 URL"
+ 
+ #: applications/luci-app-ssr-plus/luasrc/model/cbi/shadowsocksr/servers.lua:157
+ msgid "Subscribe new add server default Auto-Switch on"
+@@ -2088,7 +2088,7 @@ msgstr "用户已取消。"
+ 
+ #: applications/luci-app-ssr-plus/luasrc/model/cbi/shadowsocksr/servers.lua:188
+ msgid "User-Agent"
+-msgstr "用户代理(User-Agent)"
++msgstr "用户代理"
+ 
+ #: applications/luci-app-ssr-plus/luasrc/view/shadowsocksr/ssrurl.htm:200
+ #: applications/luci-app-ssr-plus/luasrc/view/shadowsocksr/ssrurl.htm:851
+diff --git a/luci-app-ssr-plus/root/usr/share/shadowsocksr/shadowsocksr.config b/luci-app-ssr-plus/root/usr/share/shadowsocksr/shadowsocksr.config
+index a0ec4dd..e2fa9ed 100644
+--- a/luci-app-ssr-plus/root/usr/share/shadowsocksr/shadowsocksr.config
++++ b/luci-app-ssr-plus/root/usr/share/shadowsocksr/shadowsocksr.config
+@@ -27,7 +27,7 @@ config server_subscribe
+ 	option auto_update_day_time '2'
+ 	option auto_update_min_time '0'
+ 	option user_agent 'v2rayN/9.99'
+-	option filter_words '过期/套餐/剩余/QQ群/官网/防失联/回国'
++	option filter_words '过期/套餐/剩余/QQ群/官网/防失联/回国/不可用/更换'
+ 
+ config access_control
+ 	option lan_ac_mode '0'
+diff --git a/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua b/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
+index d6e9c10..ded5413 100755
+--- a/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
++++ b/luci-app-ssr-plus/root/usr/share/shadowsocksr/subscribe.lua
+@@ -708,6 +708,84 @@ local function processData(szType, content)
+ 		if not checkTabValue(encrypt_methods_ss)[content.encryption] then
+ 			result.server = nil
+ 		end
++	elseif szType == "https" then
++		-- 提取别名（如果存在）
++		local alias = ""
++		if content:find("#") then
++			local idx_sp = content:find("#")
++			alias = content:sub(idx_sp + 1, -1)
++			content = content:sub(0, idx_sp - 1)
++		end
++		result.alias = UrlDecode(alias)
++				-- 分离和提取 password		
++		local Info = content
++		local params = {} 
++		if Info:find("@") then
++			local contents = split(Info, "@")
++			local pass_info = contents[1]
++			if pass_info:find(":") then
++				local pwd_pwd = split(pass_info, ":")
++				result.password = pwd_pwd[1]
++			else
++				result.password = UrlDecode(contents[1])
++			end
++			local port = "443"
++			Info = (contents[2] or ""):gsub("/%?", "?")
++
++			-- 分离主机和 query 参数（key=value&key2=value2）
++			local query = split(Info, "%?")
++			local host_port = query[1]
++			for _, v in pairs(split(query[2], '&')) do
++				local t = split(v, '=')
++				if #t > 1 then
++					params[string.lower(t[1])] = UrlDecode(t[2])
++				end
++			end
++
++			-- 提取服务器地址和端口
++			if host_port:find(":") then
++				local sp = split(host_port, ":")
++				result.server_port = sp[#sp]
++				result.server = sp[1]
++			else
++				result.server = host_port
++			end
++
++			-- 默认设置
++			-- 按照官方的建议 默认验证ssl证书
++			result.insecure = "0"
++			result.tls = "1"
++			result.type = "https"
++			result.v2ray_protocol = "https"
++			
++			-- 处理参数
++			if params.alpn then
++				-- 处理 alpn 参数
++				result.tls_alpn = params.alpn
++			end
++			if params.peer or params.sni then
++				-- 未指定peer（sni）默认使用remote addr
++				result.tls_host = params.peer or params.sni
++			end
++			params.allowinsecure = params.allowinsecure or params.insecure
++			if params.allowinsecure then
++				-- 处理 insecure 参数
++				if params.allowinsecure == "1" or params.allowinsecure == "0" then
++					result.insecure = params.allowinsecure
++				else
++					result.insecure = string.lower(params.allowinsecure) == "true" and "1" or "0"
++				end
++			else
++				result.insecure = "0"
++			end
++			if params.tfo then
++				-- 处理 fast open 参数
++				result.fast_open = params.tfo
++			end
++		else
++			result.server_port = port
++		end
++
+ 	elseif szType == "trojan" then
+ 		-- 提取别名（如果存在）
+ 		local alias = ""

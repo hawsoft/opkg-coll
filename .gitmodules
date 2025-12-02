@@ -20,3 +20,6 @@
 	path = golang
 	url = https://github.com/kenzok8/golang.git
 	branch = 1.25
+[submodule "luci-app-aliddns"]
+	path = luci-app-aliddns
+	url = https://github.com/honwen/luci-app-aliddns.git

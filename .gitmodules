@@ -23,3 +23,7 @@
 [submodule "luci-app-aliddns"]
 	path = luci-app-aliddns
 	url = https://github.com/honwen/luci-app-aliddns.git
+[submodule "open-clash"]
+	path = open-clash
+	url = https://github.com/vernesong/OpenClash.git
+	branch = master
